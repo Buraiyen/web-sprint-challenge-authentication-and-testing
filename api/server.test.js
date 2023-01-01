@@ -8,12 +8,19 @@ describe('POST /api/auth/register', () => {
   beforeEach(async () => {
     await db('users').where({ id: 2 }).del();
   });
-  it('throws an error with missing credentials', async () => {
+
+  const REGISTER_URL = '/api/auth/register';
+
+  it('successfully inserts the user into the database', async () => {
+    const user = { username: 'Kitboga', password: 'abcd' };
+    await request(server).post(REGISTER_URL).send(user);
+    const users = await Users.getAll();
+    expect(users).toHaveLength(2);
+  });
+
+  it('throws an error if payload has missing credentials', async () => {
     const user = { username: '', password: '32fe' };
-    // await Users.insert(user);
-    const response = await request(server)
-      .post('/api/auth/register')
-      .send(user);
+    const response = await request(server).post(REGISTER_URL).send(user);
     const responseText = JSON.parse(response.text).message;
     expect(response.status).toEqual(404);
     expect(responseText).toEqual('username and password required');
