@@ -16,7 +16,7 @@ const validateUsername = (req, res, next) => {
   Users.getByUsername(username).then((user) => {
     if (user) {
       res.status(404).json({
-        message: 'username exists',
+        message: 'username taken',
       });
       return;
     }
