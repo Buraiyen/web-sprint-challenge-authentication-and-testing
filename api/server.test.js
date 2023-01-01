@@ -5,7 +5,7 @@ const server = require('../api/server');
 const db = require('../data/dbConfig');
 const appTest = request(server);
 
-// https://stackoverflow.com/questions/69237694/jest-timeout-on-express-server-using-supertest
+const USER1 = { username: 'Barb', password: '839r2' };
 
 afterAll(async () => {
   await db.destroy();
@@ -70,6 +70,16 @@ describe('User registration and authentication', () => {
   describe('POST /api/auth/login', () => {
     const LOGIN_URL = '/api/auth/login';
 
+    // it(`receives a message and token in the response body on successful login`, async () => {
+    //   await db('users').insert(USER1);
+    //   const response = await appTest.post(LOGIN_URL).send(USER1);
+    // }, 750);
+    it("throws an error if user doesn't exist", async () => {
+      const response = await appTest.post(LOGIN_URL).send(USER1);
+      const responseText = JSON.parse(response.text).message;
+      expect(responseText).toEqual('invalid credentials');
+      expect(response.status).toEqual(401);
+    });
     it('throws an error if payload has missing credentials', async () => {
       const user = { username: '', password: '098fe' };
       const response = await appTest.post(LOGIN_URL).send(user);
