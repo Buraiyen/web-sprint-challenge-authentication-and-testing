@@ -5,10 +5,10 @@ const server = require('../api/server');
 const db = require('../data/dbConfig');
 
 describe('POST /api/auth/register', () => {
-  // beforeAll(async () => {
-  //   await db('users').truncate();
-  // });
-
+  beforeAll(async () => {
+    await db('users').truncate();
+  });
+  jest.useRealTimers();
   const REGISTER_URL = '/api/auth/register';
 
   it('should insert the user into the database', async () => {
