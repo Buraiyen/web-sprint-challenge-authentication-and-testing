@@ -5,9 +5,9 @@ const server = require('../api/server');
 const db = require('../data/dbConfig');
 
 describe('POST /api/auth/register', () => {
-  beforeAll(async () => {
-    await db('users').truncate();
-  });
+  // beforeAll(async () => {
+  //   await db('users').truncate();
+  // });
 
   const REGISTER_URL = '/api/auth/register';
 
