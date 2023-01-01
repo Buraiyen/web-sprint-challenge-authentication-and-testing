@@ -6,6 +6,15 @@ const db = require('../data/dbConfig');
 const appTest = request(server);
 
 // https://stackoverflow.com/questions/69237694/jest-timeout-on-express-server-using-supertest
+
+afterAll(async () => {
+  await db.destroy();
+});
+beforeEach(async () => {
+  await db.migrate.rollback();
+  await db.migrate.latest();
+});
+
 describe('POST /api/auth/register', () => {
   beforeAll(async () => {
     await db('users').truncate();
