@@ -83,7 +83,7 @@ describe('User registration and authentication', () => {
     it("throws an error if user doesn't exist", async () => {
       const response = await appTest.post(LOGIN_URL).send(USER1);
       const responseText = JSON.parse(response.text).message;
-      expect(responseText).toEqual('invalid credentials');
+      expect(responseText).toEqual('Invalid credentials');
       expect(response.status).toEqual(401);
     });
 
@@ -93,7 +93,7 @@ describe('User registration and authentication', () => {
         .post(LOGIN_URL)
         .send({ username: 'Barb', password: '*T&^GYIBH' });
       const responseText = JSON.parse(response.text).message;
-      expect(responseText).toEqual('invalid credentials');
+      expect(responseText).toEqual('Invalid credentials');
       expect(response.status).toEqual(401);
     });
 
