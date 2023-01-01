@@ -3,9 +3,12 @@ const Users = require('./auth/auth-model');
 const request = require('supertest');
 const server = require('../api/server');
 const db = require('../data/dbConfig');
+const bcrypt = require('bcryptjs');
 const appTest = request(server);
 
 const USER1 = { username: 'Barb', password: '839r2' };
+const LOGIN_URL = '/api/auth/login';
+const REGISTER_URL = '/api/auth/register';
 
 afterAll(async () => {
   await db.destroy();
@@ -17,8 +20,6 @@ beforeEach(async () => {
 
 describe('User registration and authentication', () => {
   describe('POST /api/auth/register', () => {
-    const REGISTER_URL = '/api/auth/register';
-
     it('should insert the user into the database', async () => {
       const user = { username: 'Kitboga', password: 'abcd' };
       await appTest.post(REGISTER_URL).send(user);
@@ -68,12 +69,17 @@ describe('User registration and authentication', () => {
   });
 
   describe('POST /api/auth/login', () => {
-    const LOGIN_URL = '/api/auth/login';
+    it(`receives a message and token in the response body on successful login`, async () => {
+      const hash = bcrypt.hashSync(USER1.password, 7);
+      USER1.password = hash;
+      await appTest.post(REGISTER_URL).send(USER1);
+      const response = await appTest.post(LOGIN_URL).send(USER1);
+      expect(response.status).toEqual(200);
+      expect(response.body).toHaveProperty('message');
+      expect(response.body.message).toMatch(/welcome,/i);
+      expect(response.body).toHaveProperty('token');
+    }, 750);
 
-    // it(`receives a message and token in the response body on successful login`, async () => {
-    //   await db('users').insert(USER1);
-    //   const response = await appTest.post(LOGIN_URL).send(USER1);
-    // }, 750);
     it("throws an error if user doesn't exist", async () => {
       const response = await appTest.post(LOGIN_URL).send(USER1);
       const responseText = JSON.parse(response.text).message;

@@ -51,10 +51,13 @@ router.post('/login', validatePayload, (req, res) => {
   Users.getByUsername(username).then((user) => {
     if (!user || !bcrypt.compareSync(password, user.password)) {
       res.status(401).json({
-        message: 'invalid credentials',
+        message: 'Invalid credentials',
       });
       return;
     }
+    const token = generateToken(user);
+    req.session.user = user;
+    res.status(200).json({ message: `welcome, ${user.username}`, token });
   });
 
   const generateToken = (user) => {
