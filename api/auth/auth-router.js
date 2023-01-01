@@ -45,7 +45,7 @@ router.post('/register', validatePayload, validateUsername, (req, res) => {
   */
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', validatePayload, (req, res) => {
   res.end('implement login, please!');
   /*
     IMPLEMENT

@@ -66,4 +66,14 @@ describe('User registration and authentication', () => {
       expect(responseText).toEqual('username taken');
     }, 750);
   });
+
+  describe('POST /api/auth/login', () => {
+    const LOGIN_URL = '/api/auth/login';
+
+    it('throws an error if payload has missing credentials', async () => {
+      const user = { username: '', password: '098fe' };
+      const response = await appTest.post(LOGIN_URL).send(user);
+      expect(response.status).toEqual(404);
+    }, 750);
+  });
 });
