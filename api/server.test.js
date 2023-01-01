@@ -80,6 +80,17 @@ describe('User registration and authentication', () => {
       expect(responseText).toEqual('invalid credentials');
       expect(response.status).toEqual(401);
     });
+
+    it('throws an error if password is invalid', async () => {
+      await db('users').insert(USER1);
+      const response = await appTest
+        .post(LOGIN_URL)
+        .send({ username: 'Barb', password: '*T&^GYIBH' });
+      const responseText = JSON.parse(response.text).message;
+      expect(responseText).toEqual('invalid credentials');
+      expect(response.status).toEqual(401);
+    });
+
     it('throws an error if payload has missing credentials', async () => {
       const user = { username: '', password: '098fe' };
       const response = await appTest.post(LOGIN_URL).send(user);
