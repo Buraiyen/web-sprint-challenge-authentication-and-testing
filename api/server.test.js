@@ -23,7 +23,7 @@ describe('POST /api/auth/register', () => {
     await appTest.post(REGISTER_URL).send(user);
     const users = await Users.getAll();
     expect(users).toHaveLength(1);
-  });
+  }, 2000);
 
   it(`should have 'id', 'username', and 'password' in response body`, async () => {
     const user = { username: 'Nairb', password: 'abcd' };
