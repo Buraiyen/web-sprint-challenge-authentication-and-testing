@@ -16,10 +16,6 @@ beforeEach(async () => {
 });
 
 describe('POST /api/auth/register', () => {
-  beforeAll(async () => {
-    await db('users').truncate();
-  });
-
   const REGISTER_URL = '/api/auth/register';
 
   it('should insert the user into the database', async () => {
@@ -30,7 +26,7 @@ describe('POST /api/auth/register', () => {
   });
 
   it(`should have 'id', 'username', and 'password' in response body`, async () => {
-    const user = { username: 'Brian', password: 'abcd' };
+    const user = { username: 'Nairb', password: 'abcd' };
     const response = await appTest.post(REGISTER_URL).send(user);
     const responseBody = JSON.parse(response.text);
     let hasFields = false;
@@ -61,7 +57,7 @@ describe('POST /api/auth/register', () => {
   });
 
   it('throws an error if username exists', async () => {
-    const user = { username: 'Gigachad', password: '32fe' };
+    const user = { username: 'Banri', password: '32fe' };
     await request(server).post(REGISTER_URL).send(user);
     const response = await appTest.post(REGISTER_URL).send(user);
     const responseText = JSON.parse(response.text).message;
