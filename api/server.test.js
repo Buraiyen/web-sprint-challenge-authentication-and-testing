@@ -3,24 +3,26 @@ const Users = require('./auth/auth-model');
 const request = require('supertest');
 const server = require('../api/server');
 const db = require('../data/dbConfig');
+const appTest = request(server);
 
+// https://stackoverflow.com/questions/69237694/jest-timeout-on-express-server-using-supertest
 describe('POST /api/auth/register', () => {
   beforeAll(async () => {
     await db('users').truncate();
   });
-  jest.useRealTimers();
+
   const REGISTER_URL = '/api/auth/register';
 
   it('should insert the user into the database', async () => {
     const user = { username: 'Kitboga', password: 'abcd' };
-    await request(server).post(REGISTER_URL).send(user);
+    await appTest.post(REGISTER_URL).send(user);
     const users = await Users.getAll();
     expect(users).toHaveLength(1);
   });
 
   it(`should have 'id', 'username', and 'password' in response body`, async () => {
     const user = { username: 'Brian', password: 'abcd' };
-    const response = await request(server).post(REGISTER_URL).send(user);
+    const response = await appTest.post(REGISTER_URL).send(user);
     const responseBody = JSON.parse(response.text);
     let hasFields = false;
     if (
@@ -35,7 +37,7 @@ describe('POST /api/auth/register', () => {
 
   it('should hash the password', async () => {
     const user = { username: 'Alfred', password: '32fe' };
-    const response = await request(server).post(REGISTER_URL).send(user);
+    const response = await appTest.post(REGISTER_URL).send(user);
     const responsePassword = JSON.parse(response.text).password;
     expect(user.password).not.toEqual(responsePassword);
     expect(responsePassword.length).toEqual(60);
@@ -43,7 +45,7 @@ describe('POST /api/auth/register', () => {
 
   it('throws an error if payload has missing credentials', async () => {
     const user = { username: '', password: '32fe' };
-    const response = await request(server).post(REGISTER_URL).send(user);
+    const response = await appTest.post(REGISTER_URL).send(user);
     const responseText = JSON.parse(response.text).message;
     expect(response.status).toEqual(404);
     expect(responseText).toEqual('username and password required');
@@ -52,7 +54,7 @@ describe('POST /api/auth/register', () => {
   it('throws an error if username exists', async () => {
     const user = { username: 'Gigachad', password: '32fe' };
     await request(server).post(REGISTER_URL).send(user);
-    const response = await request(server).post(REGISTER_URL).send(user);
+    const response = await appTest.post(REGISTER_URL).send(user);
     const responseText = JSON.parse(response.text).message;
     expect(response.status).toEqual(404);
     expect(responseText).toEqual('username exists');
