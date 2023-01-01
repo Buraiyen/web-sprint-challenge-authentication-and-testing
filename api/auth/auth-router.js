@@ -9,7 +9,9 @@ router.post('/register', validatePayload, validateUsername, (req, res) => {
   user.password = hash;
   Users.insert(user)
     .then(() => {
-      res.status(200).json(user);
+      Users.getByUsername(user.username).then((returnedUser) => {
+        res.status(200).json(returnedUser);
+      });
     })
     .catch((err) => {
       res.status(404).json({
