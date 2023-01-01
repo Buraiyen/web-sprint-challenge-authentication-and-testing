@@ -9,6 +9,7 @@ const appTest = request(server);
 const USER1 = { username: 'Barb', password: '839r2' };
 const LOGIN_URL = '/api/auth/login';
 const REGISTER_URL = '/api/auth/register';
+const JOKES_URL = '/api/jokes';
 
 afterAll(async () => {
   await db.destroy();
@@ -95,7 +96,7 @@ describe('User registration and authentication', () => {
       const responseText = JSON.parse(response.text).message;
       expect(responseText).toEqual('Invalid credentials');
       expect(response.status).toEqual(401);
-    });
+    }, 750);
 
     it('throws an error if payload has missing credentials', async () => {
       const user = { username: '', password: '098fe' };
@@ -103,4 +104,12 @@ describe('User registration and authentication', () => {
       expect(response.status).toEqual(404);
     }, 750);
   });
+});
+
+describe('Dad jokes', () => {
+  it('retrieves dad jokes', async () => {
+    const response = await appTest.get(JOKES_URL);
+    expect(response.status).toEqual(200);
+    expect(Array.isArray(response.body)).toBeTruthy();
+  }, 750);
 });
