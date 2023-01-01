@@ -5,17 +5,25 @@ const server = require('../api/server');
 const db = require('../data/dbConfig');
 
 describe('POST /api/auth/register', () => {
-  beforeEach(async () => {
-    await db('users').where({ id: 2 }).del();
+  beforeAll(async () => {
+    await db('users').truncate();
   });
 
   const REGISTER_URL = '/api/auth/register';
 
-  it('successfully inserts the user into the database', async () => {
+  it('should insert the user into the database', async () => {
     const user = { username: 'Kitboga', password: 'abcd' };
     await request(server).post(REGISTER_URL).send(user);
     const users = await Users.getAll();
-    expect(users).toHaveLength(2);
+    expect(users).toHaveLength(1);
+  });
+
+  it('should hash the password', async () => {
+    const user = { username: 'Alfred', password: '32fe' };
+    const response = await request(server).post(REGISTER_URL).send(user);
+    const responsePassword = JSON.parse(response.text).password;
+    expect(user.password).not.toEqual(responsePassword);
+    expect(responsePassword.length).toEqual(60);
   });
 
   it('throws an error if payload has missing credentials', async () => {
@@ -27,7 +35,7 @@ describe('POST /api/auth/register', () => {
   });
 
   it('throws an error if username exists', async () => {
-    const user = { username: 'Kitboga', password: '32fe' };
+    const user = { username: 'Gigachad', password: '32fe' };
     await request(server).post(REGISTER_URL).send(user);
     const response = await request(server).post(REGISTER_URL).send(user);
     const responseText = JSON.parse(response.text).message;
