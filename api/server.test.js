@@ -25,4 +25,13 @@ describe('POST /api/auth/register', () => {
     expect(response.status).toEqual(404);
     expect(responseText).toEqual('username and password required');
   });
+
+  it('throws an error if username exists', async () => {
+    const user = { username: 'Kitboga', password: '32fe' };
+    await request(server).post(REGISTER_URL).send(user);
+    const response = await request(server).post(REGISTER_URL).send(user);
+    const responseText = JSON.parse(response.text).message;
+    expect(response.status).toEqual(404);
+    expect(responseText).toEqual('username exists');
+  });
 });
