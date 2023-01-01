@@ -18,6 +18,21 @@ describe('POST /api/auth/register', () => {
     expect(users).toHaveLength(1);
   });
 
+  it(`should have 'id', 'username', and 'password' in response body`, async () => {
+    const user = { username: 'Brian', password: 'abcd' };
+    const response = await request(server).post(REGISTER_URL).send(user);
+    const responseBody = JSON.parse(response.text);
+    let hasFields = false;
+    if (
+      'id' in responseBody &&
+      'username' in responseBody &&
+      'password' in responseBody
+    ) {
+      hasFields = true;
+    }
+    expect(hasFields).toBe(true);
+  });
+
   it('should hash the password', async () => {
     const user = { username: 'Alfred', password: '32fe' };
     const response = await request(server).post(REGISTER_URL).send(user);
